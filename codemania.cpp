@@ -1,15 +1,19 @@
 #include <fstream>
 #include <iostream>
-#include <queue>
 #include <string>
 #include <vector>
 using namespace std;
 using ll = long long;
 
 vector<ll> nums;
-queue<ll> numq;
 vector<string> strs;
 
+string S;
+ll N;
+int numstate = 0;
+int strstate = 0;
+
+void execute(int var);
 
 pair<bool, int> parse(string S) {
     while (S.size() < 9) {
@@ -26,53 +30,100 @@ pair<bool, int> parse(string S) {
     return make_pair(con, res);
 }
 
+void exe_literal_num(int var) {
+    if (numstate == -1) {
+        numstate = var;
+    } else {
+        N = (N << 8) + var;
+        --numstate;
+    }
+}
+
+void exe_literal_str(int var) {
+    if (strstate == -1) {
+        strstate = N;
+    }
+    S.push_back(static_cast<char>(var));
+    --strstate;
+}
+
 void execute(int var) {
+    if (numstate != 0) {
+        exe_literal_num(var);
+        return;
+    }
+    if (strstate != 0) {
+        exe_literal_str(var);
+        return;
+    }
+
     switch (var) {
     case 0b10100000: {
         // 文字列の入力
-        cout << "input str" << endl;
-        string str;
-        cin >> str;
-        strs.push_back(str);
+        cin >> S;
         break;
     }
     case 0b01100000: {
         // 数値の入力
-        cout << "input num" << endl;
-        ll n;
-        cin >> n;
-        nums.push_back(n);
+        cin >> N;
         break;
     }
     case 0b10010000: {
         // 文字列の出力
-        cout << "output str" << endl;
-        cout << strs.back();
-        strs.pop_back();
-        break;
-    }
-    case 0b10010001: {
-        // スペースの出力
-        cout << " ";
-        break;
-    }
-    case 0b10010010: {
-        // 改行の出力
-        cout << endl;
+        cout << S;
         break;
     }
     case 0b01010000: {
         // 数値の出力
-        cout << "output num" << endl;
-        cout << nums.back();
+        cout << N;
+        break;
+    }
+    case 0b10000100: {
+        // 文字列を追加
+        strs.push_back(S);
+        break;
+    }
+    case 0b01000100: {
+        // 数値を追加
+        nums.push_back(N);
+        break;
+    }
+    case 0b10001000: {
+        // 文字列を取り出し
+        if (strs.empty()) {
+            cout << "エラー: 文字列コンテナが空のまま取り出そうとしています。" << endl;
+            exit(0);
+        }
+        S = strs.back();
+        strs.pop_back();
+        break;
+    }
+    case 0b01001000: {
+        // 数値を取り出し
+        if (nums.empty()) {
+            cout << "エラー: 数値コンテナが空のまま取り出そうとしています。" << endl;
+            exit(0);
+        }
+        N = nums.back();
         nums.pop_back();
+        break;
+    }
+    case 0b10000000: {
+        // cout << "文字列リテラルの処理" << endl;
+        S = "";
+        strstate = -1;
+        break;
+    }
+    case 0b01000000: {
+        // cout << "数値リテラルの処理" << endl;
+        N = 0;
+        numstate = -1;
         break;
     }
     }
 }
 
 int main(int argc, char* argv[]) {
-    cout << argv[1] << endl;
     ifstream ifs;
     ifs.open(argv[1]);
 
@@ -82,7 +133,6 @@ int main(int argc, char* argv[]) {
     string str;
     while (!ifs.eof()) {
         getline(ifs, str);
-        cout << str << endl;
 
         if (str.empty()) break;
 
@@ -93,7 +143,6 @@ int main(int argc, char* argv[]) {
             break;
         }
         opes.push_back(make_pair(con, var));
-        cout << con << " " << var << endl;
     }
     ifs.close();
 
