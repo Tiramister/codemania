@@ -1,13 +1,16 @@
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
 using ll = long long;
 
+vector<ll> nums;
+vector<char> chars;
+
 pair<bool, int> parse(string S) {
-    if (S.size() != 9) {
-        cout << "エラー: 入力長が9文字ではありません。" << endl;
-        exit(0);
+    while (S.size() < 9) {
+        S.push_back(' ');
     }
     bool con = (S[0] == '|');
 
@@ -21,23 +24,31 @@ pair<bool, int> parse(string S) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+    cout << argv[1] << endl;
+    ifstream ifs;
+    ifs.open(argv[1]);
+
     vector<pair<bool, int>> opes;
     opes.push_back(make_pair(false, 0));
 
-    while (true) {
-        string str;
-        getline(cin, str);
+    string str;
+    while (!ifs.eof()) {
+        getline(ifs, str);
+        cout << str << endl;
+
+        if (str.empty()) break;
 
         bool con;
         int var;
         tie(con, var) = parse(str);
-        if (var == (1 << 8) - 1) {
+        if (!con && var == 0) {
             break;
         }
         opes.push_back(make_pair(con, var));
         cout << con << " " << var << endl;
     }
+    ifs.close();
 
     return 0;
 }
