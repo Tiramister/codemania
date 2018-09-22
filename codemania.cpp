@@ -274,8 +274,39 @@ int main(int argc, char* argv[]) {
         int var;
         tie(con, var) = opes[now];
 
-        execute(var);
-        --now;
+        if (con) {
+            if (var > 0) {
+                ll time = N;
+                int begin = now;
+                for (ll t = 0; t < time; ++t) {
+                    now = begin;
+                    while (true) {
+                        bool con;
+                        int var;
+                        tie(con, var) = opes[now];
+                        if (!con) break;
+                        execute(var);
+                        --now;
+                    }
+                }
+            } else {
+                int begin = now;
+                while (N > 0) {
+                    now = begin;
+                    while (true) {
+                        bool con;
+                        int var;
+                        tie(con, var) = opes[now];
+                        if (!con) break;
+                        execute(var);
+                        --now;
+                    }
+                }
+            }
+        } else {
+            execute(var);
+            --now;
+        }
     }
 
     return 0;
