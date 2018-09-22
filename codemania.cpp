@@ -1,6 +1,8 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <tuple>
 #include <vector>
 using namespace std;
 using ll = long long;
