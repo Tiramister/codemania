@@ -76,48 +76,126 @@ void execute(int var) {
         break;
     }
 
+    // Sを標準出力、改行付き
+    case 0b10010001: {
+        cout << S << endl;
+        break;
+    }
+
     // Nを標準出力
     case 0b01010000: {
         cout << N;
         break;
     }
 
-    /* -------------------- スタック操作編 -------------------- */
+    // Nを標準出力、改行付き
+    case 0b01010001: {
+        cout << N << endl;
+        break;
+    }
+
+    /* -------------------- 文字列スタック操作 -------------------- */
     // Sを文字列スタックに追加
     case 0b10000100: {
         strs.push_back(S);
         break;
     }
 
+    // 文字列スタックの末尾を削除
+    case 0b10001000: {
+        if (strs.empty()) {
+            cout << "エラー: 文字列コンテナが空のまま取り出そうとしています。" << endl;
+            exit(0);
+        }
+        strs.pop_back();
+        break;
+    }
+
+    // 文字列スタックの末尾をSにコピー
+    case 0b10001001: {
+        if (strs.empty()) {
+            cout << "エラー: 文字列コンテナが空のまま参照しようとしています。" << endl;
+            exit(0);
+        }
+        S = strs.back();
+        break;
+    }
+
+    // 文字列スタックの末尾とSをswap
+    case 0b10001100: {
+        if (strs.empty()) {
+            cout << "エラー: 文字列コンテナが空のまま参照しようとしています。" << endl;
+            exit(0);
+        }
+        swap(S, strs.back());
+        break;
+    }
+
+    /* -------------------- 数値スタック操作 -------------------- */
     // Nを数値スタックに追加
     case 0b01000100: {
         nums.push_back(N);
         break;
     }
 
-    // 文字列スタックの先頭をSに取り出し
-    case 0b10001000: {
-        if (strs.empty()) {
-            cout << "エラー: 文字列コンテナが空のまま取り出そうとしています。" << endl;
-            exit(0);
-        }
-        S = strs.back();
-        strs.pop_back();
-        break;
-    }
-
-    // 数値スタックの先頭をNに取り出し
+    // 数値スタックの末尾を削除
     case 0b01001000: {
         if (nums.empty()) {
             cout << "エラー: 数値コンテナが空のまま取り出そうとしています。" << endl;
             exit(0);
         }
-        N = nums.back();
         nums.pop_back();
         break;
     }
 
-    /* -------------------- リテラル処理編 -------------------- */
+    // 数値スタックの末尾をNにコピー
+    case 0b01001001: {
+        if (nums.empty()) {
+            cout << "エラー: 数値コンテナが空のまま参照しようとしています。" << endl;
+            exit(0);
+        }
+        N = nums.back();
+        break;
+    }
+
+    // 数値スタックの末尾とNをswap
+    case 0b01001100: {
+        if (nums.empty()) {
+            cout << "エラー: 数値コンテナが空のまま交換しようとしています。" << endl;
+            exit(0);
+        }
+        swap(N, nums.back());
+        break;
+    }
+
+    /* -------------------- 文字と文字列操作 -------------------- */
+    // Sの末尾にCを追加
+    case 0b11000100: {
+        S.push_back(C);
+        break;
+    }
+
+    // Sの末尾を削除
+    case 0b11001000: {
+        if (S.empty()) {
+            cout << "エラー: 文字列が空のまま末尾を削除しようとしています。" << endl;
+            exit(0);
+        }
+        S.pop_back();
+        break;
+    }
+
+    // Sの末尾をCにコピー
+    case 0b11001001: {
+        if (S.empty()) {
+            cout << "エラー: 文字列が空のまま末尾を文字に移そうとしています。" << endl;
+            exit(0);
+        }
+        C = S.back();
+        break;
+    }
+
+    /* -------------------- リテラル処理 -------------------- */
     // 文字リテラルの処理
     case 0b11000000: {
         charstate = -1;
@@ -137,24 +215,7 @@ void execute(int var) {
         break;
     }
 
-    // Sの末尾にCを追加
-    case 0b11000100: {
-        S.push_back(C);
-        break;
-    }
-
-    // Sの末尾をCに移す
-    case 0b11001000: {
-        if (S.empty()) {
-            cout << "エラー: 文字列が空のまま末尾を文字に移そうとしています。" << endl;
-            exit(0);
-        }
-        C = S.back();
-        S.pop_back();
-        break;
-    }
-
-    /* -------------------- 数値の演算編 -------------------- */
+    /* -------------------- 数値の演算 -------------------- */
     // numsの先頭をNに加算
     case 0b01110000: {
         if (nums.empty()) {
@@ -162,7 +223,6 @@ void execute(int var) {
             exit(0);
         }
         N += nums.back();
-        nums.pop_back();
         break;
     }
 
@@ -173,7 +233,6 @@ void execute(int var) {
             exit(0);
         }
         N -= nums.back();
-        nums.pop_back();
         break;
     }
 
@@ -184,7 +243,6 @@ void execute(int var) {
             exit(0);
         }
         N *= nums.back();
-        nums.pop_back();
         break;
     }
 
@@ -195,7 +253,6 @@ void execute(int var) {
             exit(0);
         }
         N /= nums.back();
-        nums.pop_back();
         break;
     }
 
@@ -206,11 +263,10 @@ void execute(int var) {
             exit(0);
         }
         N %= nums.back();
-        nums.pop_back();
         break;
     }
 
-    /* -------------------- 文字列の演算編 -------------------- */
+    /* -------------------- 文字列の演算 -------------------- */
     // Sの長さをNに保持
     case 0b10110000: {
         N = S.size();
@@ -223,7 +279,7 @@ void execute(int var) {
         break;
     }
 
-    /* -------------------- 文字の演算編 -------------------- */
+    /* -------------------- 文字の演算 -------------------- */
     // Cを数値にキャストしてNに保持
     case 0b11110001: {
         N = static_cast<ll>(C);
@@ -255,15 +311,9 @@ int main(int argc, char* argv[]) {
     string str;
     while (!ifs.eof()) {
         getline(ifs, str);
-
-        if (str.empty()) break;
-
         bool con;
         int var;
         tie(con, var) = parse(str);
-        if (!con && var == 0) {
-            break;
-        }
         opes.push_back(make_pair(con, var));
     }
     ifs.close();
@@ -275,7 +325,7 @@ int main(int argc, char* argv[]) {
         tie(con, var) = opes[now];
 
         if (con) {
-            if (var > 0) {
+            if (var > 0) {  // for(N)
                 ll time = N;
                 int begin = now;
                 for (ll t = 0; t < time; ++t) {
@@ -289,7 +339,7 @@ int main(int argc, char* argv[]) {
                         --now;
                     }
                 }
-            } else {
+            } else {  // while(N > 0)
                 int begin = now;
                 while (N > 0) {
                     now = begin;
